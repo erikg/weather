@@ -19,7 +19,12 @@ if($scale=="F") {
 	$SCALE="Kelvin";
 }
 
-$fh = popen("/usr/bin/rrdtool graph -ia PNG $Start $End - DEF:tmp=/var/spool/rrd/weather/$zone.rrd:temp:AVERAGE DEF:hi=/var/spool/rrd/weather/$zone.rrd:heat_index:AVERAGE DEF:dp=/var/spool/rrd/weather/$zone.rrd:dew_point:AVERAGE $CDEF LINE3:t#000000:Temp\ \($SCALE\) LINE3:h#880000:Heat\ Index\ \($SCALE\) LINE3:d#000088:Dew\ Point\ \($SCALE\)" ,"r");
+$GAUR1="CDEF:tmp=ptmp,250,LT,UNKN,ptmp,IF";
+$GAUR2="CDEF:dp=pdp,250,LT,UNKN,pdp,IF";
+$GAUR3="CDEF:hi=phi,250,LT,UNKN,phi,IF";
+$GAURD="$GAUR1 $GAUR2 $GAUR3";
+
+$fh = popen("/usr/bin/rrdtool graph -ia PNG $Start $End - DEF:ptmp=/var/spool/rrd/weather/$zone.rrd:temp:AVERAGE DEF:phi=/var/spool/rrd/weather/$zone.rrd:heat_index:AVERAGE DEF:pdp=/var/spool/rrd/weather/$zone.rrd:dew_point:AVERAGE $GAURD $CDEF LINE3:t#000000:Temp\ \($SCALE\) LINE3:h#880000:Heat\ Index\ \($SCALE\) LINE3:d#000088:Dew\ Point\ \($SCALE\)" ,"r");
 
 fpassthru($fh);
 pclose($fh);
