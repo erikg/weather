@@ -1,0 +1,6 @@
+#!/bin/sh
+
+rrdtool graph -ia PNG /var/www/weather/$1/hum.png\
+	DEF:hum=/var/spool/rrd/weather/$1.rrd:hum:AVERAGE\
+	LINE2:hum#00CC00
+

@@ -1,0 +1,6 @@
+#!/bin/sh
+
+rrdtool graph -ia PNG /var/www/weather/$1/tmp.png\
+	DEF:tmp=/var/spool/rrd/weather/$1.rrd:tmp:AVERAGE\
+	LINE2:tmp#880000
+

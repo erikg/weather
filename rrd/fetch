@@ -1,0 +1,17 @@
+#!/bin/sh
+
+TMPFILE=/tmp/weather.$$
+SRC="http://www.weather.com/weather/local/$1?lswe=$1&lwsa=WeatherLocalUndeclared&setcookie=1"
+lynx -source "$SRC" > $TMPFILE
+KELVIN=`grep obsTempTextA $TMPFILE | cut -d '>' -f 3 | cut -d '&' -f 1 | sed 's,.*,&*.55555555555+255.37222222222222,' | bc -l`
+if [ $KELVIN < 1 ]
+then
+	echo "Heat death? I sure hope not."
+	exit -1
+fi
+RAINFALL=`grep '[0-9] in\.' $TMPFILE | cut -d '>' -f 3- | cut -d ' ' -f 1 | sed 's,.*,&*25.4,' | bc -l`
+HUMIDITY=`grep obsInfo2 $TMPFILE | grep '%<' | cut -d '>' -f 2 | cut -d '<' -f 1 | sed 's/%//'`
+rrdtool update /var/spool/rrd/weather/$1.rrd -t tmp:rainfall:hum "N:$KELVIN:$RAINFALL:$HUMIDITY"
+
+
+rm $TMPFILE

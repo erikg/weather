@@ -1,0 +1,3 @@
+#!/bin/sh
+
+wget -qO dump http://www.crh.noaa.gov/zipcity.php?inputstring=$1

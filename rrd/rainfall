@@ -1,0 +1,6 @@
+#!/bin/sh
+
+rrdtool graph -ia PNG /var/www/weather/$1/rainfall.png\
+	DEF:rainfall=/var/spool/rrd/weather/$1.rrd:rainfall:AVERAGE\
+	LINE2:rainfall#0000FF
+
