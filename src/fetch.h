@@ -1,3 +1,7 @@
+/*
+ * $Id: fetch.h,v 1.2 2005/01/10 18:52:05 erik Exp $
+ */
+
 #ifndef FETCH_H
 # define FETCH_H
 

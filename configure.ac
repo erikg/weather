@@ -1,3 +1,5 @@
+nl $Id: configure.ac,v 1.4 2005/01/10 18:53:31 erik Exp $
+
 AC_INIT(src/main.c)
 AC_CANONICAL_SYSTEM
 AM_INIT_AUTOMAKE(weather,1.0)
