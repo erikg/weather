@@ -1,6 +1,6 @@
 #!/bin/sh
 
-for a in `/bin/ls /var/spool/rrd/weather/*rrd | cut -d / -f 6 | cut -d . -f 1`
+for a in `cat /var/spool/rrd/weather/db| cut -d \| -f 1`
 do
-	/var/spool/rrd/bin/fetch $a
+	/var/spool/rrd/bin/weathergather $a
 done
