@@ -3,7 +3,4 @@
 for a in `/bin/ls /var/spool/rrd/weather/*rrd | cut -d / -f 6 | cut -d . -f 1`
 do
 	/var/spool/rrd/bin/fetch $a
-	/var/spool/rrd/bin/tmp $a
-	/var/spool/rrd/bin/hum $a
-	/var/spool/rrd/bin/rainfall $a
 done
