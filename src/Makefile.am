@@ -1,7 +1,4 @@
-bin_PROGRAMS=weather
+bin_PROGRAMS=weatherupdate
 
-weather_SOURCES = main.c lexer.l parser.y
+weatherupdate_SOURCES = main.c
 
-AM_YFLAGS=-d
-
-lexer.o: lexer.c parser.h
