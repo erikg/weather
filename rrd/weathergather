@@ -1,5 +1,5 @@
 #!/bin/sh
-# $Id: weathergather,v 1.4 2003/07/04 23:47:08 erik Exp $
+# $Id: weathergather,v 1.5 2003/11/05 17:58:46 erik Exp $
 
 # heat_index is unaccounted for :(
 
@@ -35,13 +35,17 @@ fi
 V="$V:$RAINFALL"
 TEMP="`cat $TMP|grep ^Temperature|cut -d ' ' -f 4 | cut -b 2- | sed 's/^/273.15+/' | bc -l`"
 V="$V:$TEMP"
+
 HI="U"
 if [ ! "x`grep '^Heat index' $TMP`" = "x" ]
 then
 	HI="`cat $TMP|grep '^Heat index'|cut -d ' ' -f 5 | cut -b 2- | sed 's/^/273.15+/' | bc -l`"
-	echo "Got HI! $HI"
+elif [ ! "x`grep '^Windchill' $TMP`" = "x" ]
+then
+	HI="`cat $TMP|grep '^Windchill'|cut -d ' ' -f 4 | cut -b 2- | sed 's/^/273.15+/' | bc -l`"
 fi
 V="$V:$HI"
+
 VIS="U"
 if [ ! "x`grep ^Visibility $TMP`" = "x" ]
 then
@@ -54,17 +58,17 @@ then
   WINDGUST="U"
   if [ ! "`grep 'Wind Variable' $TMP`" = "" ]
 	then
-		WINDSPEED="`cat $TMP|grep '^Wind' | cut -d ' ' -f 4 | sed "s/$/*$MPMI\/$SPH/" | bc -l`"
-		if [ "`cat $TMP|grep '^Wind' | wc -w`" -gt 9 ]
+		WINDSPEED="`cat $TMP|grep '^Wind[^c]' | cut -d ' ' -f 4 | sed "s/$/*$MPMI\/$SPH/" | bc -l`"
+		if [ "`cat $TMP|grep '^Wind[^c]' | wc -w`" -gt 9 ]
 		then
-			WINDGUST=`cat $TMP|grep '^Wind' | cut -d ' ' -f 10 | sed "s/$/*$MPMI\/$SPH/" | bc -l`
+			WINDGUST=`cat $TMP|grep '^Wind[^c]' | cut -d ' ' -f 10 | sed "s/$/*$MPMI\/$SPH/" | bc -l`
 		fi
 	else
-		WINDDIR="`cat $TMP|grep '^Wind' | cut -d ' ' -f 5 | cut -b 2-`"
-		WINDSPEED="`cat $TMP|grep '^Wind' | cut -d ' ' -f 8 | sed "s/$/*$MPMI\/$SPH/" | bc -l`"
-		if [ `cat $TMP|grep '^Wind' | wc -w` -gt 13 ]
+		WINDDIR="`cat $TMP|grep '^Wind[^c]' | cut -d ' ' -f 5 | cut -b 2-`"
+		WINDSPEED="`cat $TMP|grep '^Wind[^c]' | cut -d ' ' -f 8 | sed "s/$/*$MPMI\/$SPH/" | bc -l`"
+		if [ `cat $TMP|grep '^Wind[^c]' | wc -w` -gt 13 ]
 		then
-			WINDGUST=`cat $TMP|grep '^Wind' | cut -d ' ' -f 14 | sed "s/$/*$MPMI\/$SPH/" | bc -l`
+			WINDGUST=`cat $TMP|grep '^Wind[^c]' | cut -d ' ' -f 14 | sed "s/$/*$MPMI\/$SPH/" | bc -l`
 		fi
 	fi
 	V="$V:$WINDDIR:$WINDGUST:$WINDSPEED"
