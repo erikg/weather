@@ -1,0 +1,44 @@
+#!/bin/sh
+
+# heat_index is unaccounted for :(
+
+TMP=smoo.$$
+
+lynx -source http://weather.noaa.gov/weather/current/$1.html | perl -l040 -ne 'print "$_ ";' | sed 's,</TR>,\n,g' | sed -e 's/<[^>]*>//g' -e 's/^[ ]*//' -e 's/ [ ]*/ /g' > $TMP || exit -1
+
+	# meters per mile
+MPMI=1609.75609756097560975609
+	# seconds per hour
+SPH=3600
+
+RRD=/usr/bin/rrdtool
+T="-t dew_point:humidity:pressure:rainfall:temp:visibility:wind_dir:wind_gust:wind_speed"
+V=""
+
+V="$V:`cat $TMP|grep '^Dew Point'|cut -d ' ' -f 5 | cut -b 2- | sed 's/^/273.15+/' | bc -l`"
+V="$V:`cat $TMP|grep '^Relative Humidity'|cut -d ' ' -f 3 | sed 's/%//'`"
+V="$V:`cat $TMP|grep '^Pressure (altim'|cut -d ' ' -f 6 | cut -b 2-| sed 's/^/100*/'|bc -l`"
+RAINFALL="U"
+V="$V:$RAINFALL"
+V="$V:`cat $TMP|grep ^Temperature|cut -d ' ' -f 4 | cut -b 2- | sed 's/^/273.15+/' | bc -l`"
+VIS="U"
+if [ ! "x`grep ^Visibility $TMP`" = "x" ]
+then
+	VIS="`grep ^Visibility $TMP|cut -d ' ' -f 2|sed "s/^/$MPMI*/"|bc -l`"
+fi
+V="$V:$VIS"
+V="$V:`cat $TMP|grep '^Wind' | cut -d ' ' -f 5 | cut -b 2-`"
+V="$V:`cat $TMP|grep '^Wind' | cut -d ' ' -f 8 | sed "s/$/*$MPMI\/$SPH/" | bc -l`"
+WINDGUST=U
+if [ `cat $TMP|grep '^Wind' | wc -w` -gt 13 ]
+then
+	WINDGUST=`cat $TMP|grep '^Wind' | cut -d ' ' -f 14 | sed "s/$/*$MPMI\/$SPH/" | bc -l`
+fi
+V="$V:$WINDGUST"
+# heat index (k)
+#HI=`cat $TMP|grep '^'|cut -d ' ' -f 4 | cut -b 2- | sed 's/^/273.15+/' | bc -l`
+
+/usr/bin/rrdtool update /var/spool/rrd/weather/$1.rrd $T N$V
+
+rm $TMP
+
