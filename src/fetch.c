@@ -3,7 +3,7 @@
  */
 
 /*
- * $Id: fetch.c,v 1.2 2005/01/11 15:18:36 erik Exp $
+ * $Id: fetch.c,v 1.3 2005/01/12 17:28:37 erik Exp $
  */
 
 #include <stdio.h>
@@ -52,9 +52,10 @@ fetch (char *ac)
 	s->sin_port = htons (80);
 	if ((h = gethostbyname (SERVER)) == NULL)
 	{
-	    perror ("gethostbyname");
+	    herror ("gethostbyname");
 	    return NULL;
 	}
+	endhostent();
 	s->sin_addr = *((struct in_addr *)h->h_addr_list[0]);
     }
 
@@ -89,7 +90,11 @@ fetch (char *ac)
     }
 
     *off = 0;
-    shutdown (fd, SHUT_RDWR);
+    if(shutdown (fd, SHUT_RDWR) != 0)
+    {
+	perror("shutdown");
+	exit(-1);
+    }
     close (fd);
 
     /*
