@@ -12,14 +12,16 @@ N		[0-9]
 RS		<TR[^>]*>
 RE		</TR>
 TAG		<[^>]*>
-WS		[	 \n]|&nbsp;
+WS		[	 ]|&nbsp;
 
 %%
 
-RS		{ printf("ROWSTART!\n"); return ROWSTART; }
-RE		{ printf("ROWEND!\n"); return ROWEND; }
-{WS}		{ /* comment */ }
-.		{ yylval.s = yytext; return STR; }
+RS		{ printf("\nROWSTART!\n"); /*return ROWSTART; */}
+RE		{ printf("\nROWEND!\n"); /*return ROWEND; */}
+\n		{ weatherlineno++; }
+{TAG}+		{ printf("%s\n", yytext); }
+{WS}|{TAG}	{ /* comment */ }
+.		{ printf("%s", yytext); /*yylval.s = yytext; return STR;*/ }
 
 %%
 

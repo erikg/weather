@@ -7,6 +7,7 @@ void yyparse(void);
 int main(int argc, char **argv)
 {
 	yyin = stdin;
-	yyparse();
+//	yyparse();
+	yylex();
 	return EXIT_SUCCESS;
 }
