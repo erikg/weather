@@ -1,25 +1,9 @@
+#!/bin/sh
 
-/var/spool/rrd/bin/fetch 38017
-/var/spool/rrd/bin/fetch 63366
-/var/spool/rrd/bin/fetch 65802
-/var/spool/rrd/bin/fetch 65807
-/var/spool/rrd/bin/fetch 78154
-
-rrdtool graph -ia PNG /var/www/weather/38017/tmp.png DEF:tmp=/var/spool/rrd/weather/38017.rrd:tmp:AVERAGE LINE2:tmp#CC0000
-rrdtool graph -ia PNG /var/www/weather/63366/tmp.png DEF:tmp=/var/spool/rrd/weather/63366.rrd:tmp:AVERAGE LINE2:tmp#CC0000
-rrdtool graph -ia PNG /var/www/weather/65807/tmp.png DEF:tmp=/var/spool/rrd/weather/65807.rrd:tmp:AVERAGE LINE2:tmp#CC0000
-rrdtool graph -ia PNG /var/www/weather/65802/tmp.png DEF:tmp=/var/spool/rrd/weather/65802.rrd:tmp:AVERAGE LINE2:tmp#CC0000
-rrdtool graph -ia PNG /var/www/weather/78154/tmp.png DEF:tmp=/var/spool/rrd/weather/78154.rrd:tmp:AVERAGE LINE2:tmp#CC0000
-
-rrdtool graph -ia PNG /var/www/weather/38017/hum.png DEF:hum=/var/spool/rrd/weather/38017.rrd:hum:AVERAGE LINE2:hum#CC0000
-rrdtool graph -ia PNG /var/www/weather/63366/hum.png DEF:hum=/var/spool/rrd/weather/63366.rrd:hum:AVERAGE LINE2:hum#CC0000
-rrdtool graph -ia PNG /var/www/weather/65807/hum.png DEF:hum=/var/spool/rrd/weather/65807.rrd:hum:AVERAGE LINE2:hum#CC0000
-rrdtool graph -ia PNG /var/www/weather/65802/hum.png DEF:hum=/var/spool/rrd/weather/65802.rrd:hum:AVERAGE LINE2:hum#CC0000
-rrdtool graph -ia PNG /var/www/weather/78154/hum.png DEF:hum=/var/spool/rrd/weather/78154.rrd:hum:AVERAGE LINE2:hum#CC0000
-
-rrdtool graph -ia PNG /var/www/weather/38017/rainfall.png DEF:rainfall=/var/spool/rrd/weather/38017.rrd:rainfall:AVERAGE LINE2:rainfall#CC0000
-rrdtool graph -ia PNG /var/www/weather/63366/rainfall.png DEF:rainfall=/var/spool/rrd/weather/63366.rrd:rainfall:AVERAGE LINE2:rainfall#CC0000
-rrdtool graph -ia PNG /var/www/weather/65807/rainfall.png DEF:rainfall=/var/spool/rrd/weather/65807.rrd:rainfall:AVERAGE LINE2:rainfall#CC0000
-rrdtool graph -ia PNG /var/www/weather/65802/rainfall.png DEF:rainfall=/var/spool/rrd/weather/65802.rrd:rainfall:AVERAGE LINE2:rainfall#CC0000
-rrdtool graph -ia PNG /var/www/weather/78154/rainfall.png DEF:rainfall=/var/spool/rrd/weather/78154.rrd:rainfall:AVERAGE LINE2:rainfall#CC0000
-
+for a in `/bin/ls /var/spool/rrd/weather/*rrd | cut -d / -f 6 | cut -d . -f 1`
+do
+	/var/spool/rrd/bin/fetch $a
+	/var/spool/rrd/bin/tmp $a
+	/var/spool/rrd/bin/hum $a
+	/var/spool/rrd/bin/rainfall $a
+done
