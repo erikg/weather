@@ -1,5 +1,5 @@
 #!/bin/sh
-# $Id: weathergather,v 1.3 2003/06/19 20:59:09 erik Exp $
+# $Id: weathergather,v 1.4 2003/07/04 23:47:08 erik Exp $
 
 # heat_index is unaccounted for :(
 
@@ -15,7 +15,7 @@ MPMI=1609.75609756097560975609
 SPH=3600
 
 RRD=/usr/bin/rrdtool
-T="-t dew_point:humidity:pressure:rainfall:temp:visibility:wind_dir:wind_gust:wind_speed"
+T="-t dew_point:humidity:pressure:rainfall:temp:heat_index:visibility:wind_dir:wind_gust:wind_speed"
 V=""
 
 DP=`cat $TMP|grep '^Dew Point'|cut -d ' ' -f 5 | cut -b 2- | sed 's/^/273.15+/' | bc -l`
@@ -33,7 +33,15 @@ then
 	fi
 fi
 V="$V:$RAINFALL"
-V="$V:`cat $TMP|grep ^Temperature|cut -d ' ' -f 4 | cut -b 2- | sed 's/^/273.15+/' | bc -l`"
+TEMP="`cat $TMP|grep ^Temperature|cut -d ' ' -f 4 | cut -b 2- | sed 's/^/273.15+/' | bc -l`"
+V="$V:$TEMP"
+HI="U"
+if [ ! "x`grep '^Heat index' $TMP`" = "x" ]
+then
+	HI="`cat $TMP|grep '^Heat index'|cut -d ' ' -f 5 | cut -b 2- | sed 's/^/273.15+/' | bc -l`"
+	echo "Got HI! $HI"
+fi
+V="$V:$HI"
 VIS="U"
 if [ ! "x`grep ^Visibility $TMP`" = "x" ]
 then
