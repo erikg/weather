@@ -2,5 +2,5 @@
 
 for a in `cat /var/spool/rrd/weather/db| cut -d \| -f 1`
 do
-	/var/spool/rrd/bin/weathergather $a
+	(/var/spool/rrd/bin/weathergather $a &)
 done
