@@ -1,0 +1,23 @@
+#!/bin/sh
+
+DIR=/var/spool/rrd/weather
+
+echo $1 >> $DIR/db
+
+rrdtool create $DIR/$1.rrd\
+ DS:visibility:GAUGE:3600:0:U\
+ DS:temp:GAUGE:3600:0:U\
+ DS:heat_index:GAUGE:3600:0:U\
+ DS:dew_point:GAUGE:3600:0:U\
+ DS:humidity:GAUGE:3600:0:100\
+ DS:pressure:GAUGE:3600:0:U\
+ DS:wind_dir:GAUGE:3600:0:360\
+ DS:wind_speed:GAUGE:3600:0:U\
+ DS:wind_gust:GAUGE:3600:0:U\
+ RRA:AVERAGE:0.1:1:9000\
+ RRA:AVERAGE:0.1:24:1000\
+ RRA:MIN:0.1:1:9000\
+ RRA:MIN:0.1:7:1000\
+ RRA:MAX:0.1:1:9000\
+ RRA:MAX:0.1:7:1000
+
